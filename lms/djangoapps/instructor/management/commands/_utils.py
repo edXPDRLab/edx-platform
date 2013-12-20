@@ -5,7 +5,6 @@ Helper methods.
 import csv
 import json
 import time
-from django.contrib.auth.models import User
 
 from courseware.model_data import FieldDataCache
 from courseware.module_render import get_module
@@ -32,26 +31,6 @@ def get_enrolled_students(course_id):
         courseenrollment__is_active=1
     ).order_by('username')
     return enrolled_students
-
-
-def get_users_from_ids(ids):
-    """Return students from a list of ids."""
-
-    users = User.objects.filter(
-        id__in=ids,
-    ).order_by('username')
-    return users
-
-
-def get_student_ids_from_csv(path_to_csv):
-    """Return student ids from a csv."""
-
-    student_ids = []
-    with open(path_to_csv) as csv_file:
-        csv_reader = csv.reader(csv_file)
-        student_ids = [row[0] for row in csv_reader]
-
-    return student_ids
 
 
 def create_json_file_of_data(data, filename):

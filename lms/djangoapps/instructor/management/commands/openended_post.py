@@ -1,6 +1,7 @@
 """
 Command to manually re-post open ended submissions to the grader.
 """
+from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 from optparse import make_option
 
@@ -8,7 +9,7 @@ from courseware.courses import get_course
 from xmodule.modulestore import Location
 from xmodule.modulestore.django import modulestore
 from xmodule.open_ended_grading_classes.openendedchild import OpenEndedChild
-from ._utils import get_module_for_student, get_student_ids_from_csv, get_users_from_ids
+from ._utils import get_module_for_student
 
 
 class Command(BaseCommand):
@@ -32,7 +33,7 @@ class Command(BaseCommand):
         if len(args) == 3:
             course_id = args[0]
             location = args[1]
-            students_ids = get_student_ids_from_csv(args[2])
+            students_ids = [line.strip() for line in open(args[2])]
         else:
             print self.help
             return
@@ -50,7 +51,8 @@ class Command(BaseCommand):
 
         if dry_run:
             print "Doing a dry run."
-        students = get_users_from_ids(students_ids)
+
+        students = User.objects.filter(id__in=students_ids).order_by('username')
         print "Number of students: {0}".format(students.count())
 
         for student in students:
