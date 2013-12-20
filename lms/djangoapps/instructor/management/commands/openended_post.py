@@ -77,10 +77,10 @@ class Command(BaseCommand):
                 elif latest_task_state == OpenEndedChild.ASSESSING:
                     latest_answer = latest_task.latest_answer()
                     if dry_run:
-                        print "  Skipped sending submission to grader: {0}".format(repr(latest_answer[:100].encode('utf-8')))
+                        print "  Skipped sending submission to grader: {0!r}".format(latest_answer[:100].encode('utf-8'))
                     else:
                         latest_task.send_to_grader(latest_answer, latest_task.system)
-                        print "  Sent submission to grader: {0}".format(repr(latest_answer[:100].encode('utf-8')))
+                        print "  Sent submission to grader: {0!r}".format(latest_answer[:100].encode('utf-8'))
                 else:
                     print "WARNING: Invalid task_state: {0}".format(latest_task_state)
             except Exception as err:  # pylint: disable=broad-except
