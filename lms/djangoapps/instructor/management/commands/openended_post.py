@@ -61,7 +61,7 @@ class Command(BaseCommand):
                     print "  WARNING: No state found."
                     continue
 
-                latest_task = module._xmodule.child_module.get_current_task()  # pylint: disable=protected-access
+                latest_task = module.child_module.get_current_task()
                 if latest_task is None:
                     print "  WARNING: No state found."
                     continue
