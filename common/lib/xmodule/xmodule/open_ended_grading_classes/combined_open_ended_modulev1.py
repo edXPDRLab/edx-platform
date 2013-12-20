@@ -380,14 +380,14 @@ class CombinedOpenEndedV1Module():
         )
         return task
 
-    def get_current_task(self):
-        """Return current task object."""
+    def get_task_at_index(self, task_index):
+        """Return task object at task_index."""
 
-        if len(self.task_states) > 0:
-            current_task_index = len(self.task_states) - 1
-            current_task_state = self.task_states[current_task_index]
-            current_task_xml = self.task_xml[current_task_index]
-            return self.create_task(current_task_state, current_task_xml)
+        task_states_count = len(self.task_states)
+        if task_states_count > 0 and task_index < task_states_count:
+            task_state = self.task_states[task_index]
+            task_xml = self.task_xml[task_index]
+            return self.create_task(task_state, task_xml)
         return None
 
     def reset_task_state(self, message=""):

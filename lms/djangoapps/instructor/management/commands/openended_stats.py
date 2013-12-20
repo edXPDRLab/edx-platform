@@ -2,6 +2,7 @@
 Command to get statistics about open ended problems.
 """
 from django.core.management.base import BaseCommand
+from optparse import make_option
 
 from courseware.courses import get_course
 from courseware.models import StudentModule
@@ -17,11 +18,19 @@ class Command(BaseCommand):
     Command to get statistics about open ended problems.
     """
 
-    help = "Usage: openended_stats <course_id> <problem_location> \n"
-    output_transaction = True
+    help = "Usage: openended_stats <course_id> <problem_location> --task-index=<task_index>\n"
+
+    option_list = BaseCommand.option_list + (
+        make_option('--task-index',
+                    type='int', default=0,
+                    help="Index of task state."),
+    )
+
 
     def handle(self, *args, **options):
         """Handler for command."""
+
+        task_index = options['task_index']
 
         if len(args) == 2:
             course_id = args[0]
@@ -45,12 +54,12 @@ class Command(BaseCommand):
             enrolled_students = get_enrolled_students(course_id)
             print "Total students enrolled in {0}: {1}".format(course_id, enrolled_students.count())
 
-            self.calculate_state_counts(enrolled_students, course, location)
+            self.calculate_state_counts(enrolled_students, course, location, task_index)
 
         except KeyboardInterrupt:
             print "\nOperation Cancelled"
 
-    def calculate_state_counts(self, students, course, location):
+    def calculate_state_counts(self, students, course, location, task_index):
         """Print stats of students."""
 
         stats = {
@@ -80,9 +89,9 @@ class Command(BaseCommand):
                 students_with_invalid_state.append(student)
                 continue
 
-            latest_task = module.child_module.get_current_task()
+            latest_task = module.child_module.get_task_at_index(task_index)
             if latest_task is None:
-                print "  WARNING: No state found"
+                print "  WARNING: No task state found"
                 students_with_invalid_state.append(student)
                 continue
 

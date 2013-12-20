@@ -17,18 +17,22 @@ class Command(BaseCommand):
     Command to manually re-post open ended submissions to the grader.
     """
 
-    help = ("Usage: openended_post --dry-run <course_id> <problem_location> <student_ids.csv> \n"
-            "The csv file should contain a User.id in each line.")
+    help = ("Usage: openended_post <course_id> <problem_location> <student_ids.txt> --dry-run --task-index=<task_index>\n"
+            "The text file should contain a User.id in each line.")
 
     option_list = BaseCommand.option_list + (
         make_option('-n', '--dry-run',
                     action='store_true', dest='dry_run', default=False,
                     help="Do everything except send the submission to the grader. "),
+        make_option('--task-index',
+                    type='int', default=0,
+                    help="Index of task state."),
     )
 
     def handle(self, *args, **options):
 
         dry_run = options['dry_run']
+        task_index = options['task_index']
 
         if len(args) == 3:
             course_id = args[0]
@@ -63,9 +67,9 @@ class Command(BaseCommand):
                     print "  WARNING: No state found."
                     continue
 
-                latest_task = module.child_module.get_current_task()
+                latest_task = module.child_module.get_task_at_index(task_index)
                 if latest_task is None:
-                    print "  WARNING: No state found."
+                    print "  WARNING: No task state found."
                     continue
 
                 latest_task_state = latest_task.child_state
