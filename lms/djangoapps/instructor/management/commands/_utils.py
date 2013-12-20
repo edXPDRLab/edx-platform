@@ -8,51 +8,20 @@ import time
 from django.contrib.auth.models import User
 
 from courseware.model_data import FieldDataCache
-from courseware.module_render import get_module_for_descriptor
+from courseware.module_render import get_module
 from courseware.courses import get_course
+from xmodule.modulestore.django import modulestore
 
 
-def get_descriptor(course, location):
-    """Find descriptor for the location in the course."""
-
-    grading_context = course.grading_context
-    for descriptor in grading_context['all_descriptors']:
-        if descriptor.id == location:
-            return descriptor
-
-    return None
-
-
-def create_module(student, course, descriptor, request):
-    """Create module for student from descriptor."""
-
-    field_data_cache = FieldDataCache([descriptor], course.id, student)
-    return get_module_for_descriptor(student, request, descriptor, field_data_cache, course.id)
-
-
-def get_module_for_student(student, course, location, descriptor=None, request=None):
+def get_module_for_student(student, course, location):
     """Return module for student from location."""
 
-    if isinstance(student, str):
-        try:
-            student = User.objects.get(username=student)
-        except User.DoesNotExist:
-            return None
+    descriptor = modulestore().get_instance(course.id, location, depth=0)
+    request = DummyRequest()
+    request.user = student
 
-    if isinstance(course, str):
-        course = get_course(course)
-        if course is None:
-            return None
-
-    if descriptor is None:
-        descriptor = get_descriptor(course, location)
-
-    if request is None:
-        request = DummyRequest()
-        request.user = student
-
-    module = create_module(student, course, descriptor, request)
-    return module
+    field_data_cache = FieldDataCache([descriptor], course.id, student)
+    return get_module(student, request, location, field_data_cache, course.id)
 
 
 def get_enrolled_students(course_id):

@@ -3,11 +3,13 @@ Command to get statistics about open ended problems.
 """
 from django.core.management.base import BaseCommand
 
-from xmodule.open_ended_grading_classes.openendedchild import OpenEndedChild
 from courseware.courses import get_course
 from courseware.models import StudentModule
+from xmodule.modulestore import Location
+from xmodule.modulestore.django import modulestore
+from xmodule.open_ended_grading_classes.openendedchild import OpenEndedChild
 from student.models import anonymous_id_for_user
-from ._utils import get_descriptor, get_module_for_student, get_enrolled_students, create_json_file_of_data
+from ._utils import create_json_file_of_data, get_enrolled_students, get_module_for_student
 
 
 class Command(BaseCommand):
@@ -34,7 +36,7 @@ class Command(BaseCommand):
             print err
             return
 
-        descriptor = get_descriptor(course, location)
+        descriptor = modulestore().get_instance(course.id, location, depth=0)
         if descriptor is None:
             print "Location {0} not found in course".format(location)
             return
@@ -63,7 +65,6 @@ class Command(BaseCommand):
         students_with_graded_submissions = []  # pylint: disable=invalid-name
         students_with_invalid_state = []
 
-        descriptor = get_descriptor(course, location)
         student_modules = StudentModule.objects.filter(module_state_key=location, student__in=students).order_by('student')
         print "Total student modules: {0}".format(student_modules.count())
 
@@ -73,7 +74,7 @@ class Command(BaseCommand):
 
             student = student_module.student
             print "{0}:{1}".format(student.id, student.username)
-            module = get_module_for_student(student, course, location, descriptor=descriptor)
+            module = get_module_for_student(student, course, location)
             if module is None:
                 print "  WARNING: No state found"
                 students_with_invalid_state.append(student)
@@ -108,7 +109,8 @@ class Command(BaseCommand):
                                     "username": student.username,
                                     } for student in students_with_graded_submissions]
 
-        filename = "stats.{0}.{1}".format(descriptor.location.course, descriptor.location.name)
+        location = Location(location)
+        filename = "stats.{0}.{1}".format(location.course, location.name)
         create_json_file_of_data(data, filename)
 
         print "----------------------------------"

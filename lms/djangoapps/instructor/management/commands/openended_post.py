@@ -5,8 +5,10 @@ from django.core.management.base import BaseCommand
 from optparse import make_option
 
 from courseware.courses import get_course
+from xmodule.modulestore import Location
+from xmodule.modulestore.django import modulestore
 from xmodule.open_ended_grading_classes.openendedchild import OpenEndedChild
-from ._utils import get_descriptor, get_student_ids_from_csv, get_users_from_ids, get_module_for_student
+from ._utils import get_module_for_student, get_student_ids_from_csv, get_users_from_ids
 
 
 class Command(BaseCommand):
@@ -41,7 +43,7 @@ class Command(BaseCommand):
             print err
             return
 
-        descriptor = get_descriptor(course, location)
+        descriptor = modulestore().get_instance(course.id, location, depth=0)
         if descriptor is None:
             print "Location not found in course"
             return
