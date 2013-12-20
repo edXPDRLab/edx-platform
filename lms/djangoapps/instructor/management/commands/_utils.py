@@ -10,7 +10,6 @@ from django.contrib.auth.models import User
 from courseware.model_data import FieldDataCache
 from courseware.module_render import get_module_for_descriptor
 from courseware.courses import get_course
-from student.models import AnonymousUserId, anonymous_id_for_user
 
 
 def get_descriptor(course, location):
@@ -64,28 +63,6 @@ def get_enrolled_students(course_id):
         courseenrollment__is_active=1
     ).order_by('username')
     return enrolled_students
-
-
-def anonymous_user_id_for_user(user, course_id, read_only=False):
-    """Wrapper so that during testing local anonymous ids are not created."""
-
-    if user.is_anonymous():
-        return None
-
-    if read_only:
-        try:
-            anonymous_user_id = AnonymousUserId.objects.get(
-                user=user,
-                course_id=course_id
-            )
-        except AnonymousUserId.DoesNotExist:
-            pass
-        else:
-            return anonymous_user_id.anonymous_user_id
-    else:
-        return anonymous_id_for_user(user, course_id)
-
-    return "Missing"
 
 
 def get_users_from_ids(ids):

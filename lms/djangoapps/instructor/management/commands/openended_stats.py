@@ -6,7 +6,8 @@ from django.core.management.base import BaseCommand
 from xmodule.open_ended_grading_classes.openendedchild import OpenEndedChild
 from courseware.courses import get_course
 from courseware.models import StudentModule
-from ._utils import get_descriptor, get_module_for_student, get_enrolled_students, create_json_file_of_data, anonymous_user_id_for_user
+from student.models import anonymous_id_for_user
+from ._utils import get_descriptor, get_module_for_student, get_enrolled_students, create_json_file_of_data
 
 
 class Command(BaseCommand):
@@ -97,12 +98,12 @@ class Command(BaseCommand):
                 students_with_graded_submissions.append(student)
 
         data = dict()
-        data["assessing"] = [{"anonymous_id": anonymous_user_id_for_user(student, '', read_only=True),
+        data["assessing"] = [{"anonymous_id": anonymous_id_for_user(student, ''),
                               "user_id": student.id,
                               "username": student.username,
                               } for student in students_with_ungraded_submissions]
 
-        data["post_assessment"] = [{"anonymous_id": anonymous_user_id_for_user(student, '', read_only=True),
+        data["post_assessment"] = [{"anonymous_id": anonymous_id_for_user(student, ''),
                                     "user_id": student.id,
                                     "username": student.username,
                                     } for student in students_with_graded_submissions]
