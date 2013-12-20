@@ -115,7 +115,7 @@ class Command(BaseCommand):
 
         print "----------------------------------"
         print "Course: {0}".format(course.location)
-        print "Location {0}:".format(location)
+        print "Location: {0}".format(location)
         print "Viewed problem: {0}".format(stats[OpenEndedChild.INITIAL] - len(students_with_saved_answers))
         print "Saved answers: {0}".format(len(students_with_saved_answers))
         print "Submitted answers: {0}".format(stats[OpenEndedChild.ASSESSING])
