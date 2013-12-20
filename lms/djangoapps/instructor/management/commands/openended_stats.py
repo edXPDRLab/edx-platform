@@ -45,12 +45,12 @@ class Command(BaseCommand):
             enrolled_students = get_enrolled_students(course_id)
             print "Total students enrolled in {0}: {1}".format(course_id, enrolled_students.count())
 
-            self.get_state_counts(enrolled_students, course, location)
+            self.calculate_state_counts(enrolled_students, course, location)
 
         except KeyboardInterrupt:
             print "\nOperation Cancelled"
 
-    def get_state_counts(self, students, course, location):
+    def calculate_state_counts(self, students, course, location):
         """Print stats of students."""
 
         stats = {

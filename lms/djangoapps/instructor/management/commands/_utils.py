@@ -6,6 +6,7 @@ import csv
 import json
 import time
 
+from django.contrib.auth.models import User
 from courseware.model_data import FieldDataCache
 from courseware.module_render import get_module
 from courseware.courses import get_course
