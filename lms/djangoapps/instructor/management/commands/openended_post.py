@@ -6,7 +6,7 @@ from optparse import make_option
 
 from courseware.courses import get_course
 from xmodule.open_ended_grading_classes.openendedchild import OpenEndedChild
-from ...utils import get_descriptor, get_student_ids_from_csv, get_users_from_ids, get_module_for_student
+from ._utils import get_descriptor, get_student_ids_from_csv, get_users_from_ids, get_module_for_student
 
 
 class Command(BaseCommand):
